@@ -1,0 +1,68 @@
+"""
+You are given an array of 2n elements:
+[A1,A2,...,An,B1,B2,...,Bn]
+
+You have to interleave the array, using an in-place algorithm,
+so that the resulting array looks like:
+[A1,B1,A2,B2,...,An,Bn]
+
+O(n) time complexity
+O(1) space complexity
+"""
+
+
+# In-place equivalent to:   A[start:end+1] = reversed(A[start:end+1])
+def reverse_subarray(A, start, end):
+    for i in range(start, (start+end+1) // 2):
+        A[i], A[start+end-i] = A[start+end-i], A[i]
+
+
+# In-place equivalent to:   A[start:end+1] = A[end-n+1:end+1] + A[start:end-n+1]
+def rotate_subarray(A, start, end, n):
+    reverse_subarray(A, start, end)
+    reverse_subarray(A, start, start+n-1)
+    reverse_subarray(A, start+n, end)
+
+
+# O(n) time complexity
+# O(1) space complexity
+def in_shuffle(A):
+    start = 0
+    n = len(A) // 2
+    while n > 1:
+        k = 1
+        while 3**(k+1) <= 2*n-1:
+            k += 1
+        m = (3**k+1) // 2
+        rotate_subarray(A, start+m, start+n+m-1, m)
+        if m > 1:
+            for x in range(k):
+                i = 3**x
+                j = 2*i % (2*m-1)
+                while i != j:
+                    A[start+i], A[start+j] = A[start+j], A[start+i]
+                    j = 2*j % (2*m-1)
+        start += 2*m
+        n = (len(A)-start) // 2
+    print("in_shuffle() is done.")
+
+
+# O(n^2) time complexity
+# O(1) space complexity
+def in_shuffle2(A):
+    n = len(A) // 2
+    for i in range(n, 2*n):
+        for j in reversed(range(2*i-2*n+1, i)):
+            A[j], A[j+1] = A[j+1], A[j]
+    print("in_shuffle2() is done.")
+
+
+A = list(range(10000))
+B = list(range(10000))
+
+in_shuffle(A)
+in_shuffle2(B)
+
+print('\nA == B:\t', A == B, '\n')
+print('A:\t[', *A[:15], '... ]')
+print('B:\t[', *B[:15], '... ]')
